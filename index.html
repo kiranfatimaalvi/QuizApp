@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+        crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/687ba78eae.js" crossorigin="anonymous"></script>
+    <title>Quiz Competition</title>
+</head>
+
+<style> 
+    /* @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Oswald:wght@400;700&display=swap'); */
+
+    body {
+        font-family: dancing script;
+    }
+
+    button:hover {
+        transition-duration: .3s;
+        background-color: black !important;
+        color: white !important;
+    }
+    h1{
+        font-size: 85px
+    }
+    @media screen and (max-width:576px) and (min-width:320px) {
+        h1{
+            font-size: 60px;
+        }
+    #optionElement{
+        font-size:13px !important ;
+    }
+    }
+</style>
+
+<body class="d-flex justify-content-center align-item-center">
+    <div id="quiz-container" class="w-100 mt-5 d-flex justify-content-center flex-column">
+        <h1 class="text-center">Quiz App</h1>
+        <div id="question-container">
+            <p id="question" class="px-5 text-center fs-2xl-1 fs-xl-1 fs-lg-1 fs-md-1 fs-sm-2 fs-3 pt-3"></p>
+        </div>
+        <div id="options-container" class="d-flex flex-column w-50 px-2" style="margin: 0 auto;">
+        </div>
+        <button id="next-button" class="mt-2 bg-transparent fs-3 px-5" style="margin: 0 auto;height: 6vh;">Next</button>
+        <p id="score" class="text-center pt-3 fw-bold fs-3 w-50" style="margin: 0 auto;">Score: 0</p>
+        <p id="timer" class="text-center fw-bold fs-2 w-50" style="margin: 0 auto;">Time Left: 10 seconds</p>
+    </div>
+</body>
+
+<script>
+    let quizQuestions = [
+        {
+            question: "Js Stands 4?",
+            options: ["Javascript", "Java", "Python", "Css"],
+            correctAnswer: "Javascript"
+        },
+        {
+            question: "Javascript is an _______ language?",
+            options: ["Object-Oriented", "Object-Based", "Procedural", "None of the above"],
+            correctAnswer: "Object-Based"
+        },
+        {
+            question: "Which of the following keywords is used to define a variable in Javascript?",
+            options: ["var", "let", "Both A and B", "None of the above"],
+            correctAnswer: "Both A and B"
+        },
+        {
+            question: "Which of the following methods is used to access HTML elements using Javascript?",
+            options: ["getElementById()", "getElementsByClassName()", "Both A and B", "None of the above"],
+            correctAnswer: "Both A and B"
+        },
+        {
+            question: " Which of the following methods can be used to display data in some form using Javascript?",
+            options: ["document.write()", "console.log()", "window.alert()", "All of the above"],
+            correctAnswer: "All of the above"
+        },
+        {
+            question: "How can a datatype be declared to be a constant type?",
+            options: ["const", "var", "let", "constant"],
+            correctAnswer: "const"
+        },
+        {
+            question: "What keyword is used to check whether a given property is valid or not?",
+            options: ["in", "is in", "exists", "lies"],
+            correctAnswer: "in"
+        },
+        {
+            question: "What is the use of the <noscript> tag in Javascript?",
+            options: ["The contents are displayed by non-JS-based-browser", "Clear all cookies and cache", "Both A and B", "None of the above"],
+            correctAnswer: "The contents are displayed by non-JS-based-browser"
+        },
+        {
+            question: "CSS stands 4?",
+            options: ["Cascading Style Sheet", "JavaScript", "Java", "Python"],
+            correctAnswer: "Cascading Style Sheet"
+        },
+        {
+            question: " What is JavaScript?",
+            options: [
+                "JavaScript is a scripting language used to make the website interactive",
+                "JavaScript is an assembly language used to make the website interactive",
+                "JavaScript is a compiled language used to make the website interactive",
+                "None of the mentioned"],
+            correctAnswer: "JavaScript is a scripting language used to make the website interactive"
+        },
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timerSeconds = 10
+
+    let body = document.getElementsByTagName('body')[0];
+    let questionElement = document.getElementById("question");
+    let optionsContainer = document.getElementById("options-container");
+    let nextButton = document.getElementById("next-button");
+    let scoreElement = document.getElementById("score");
+    let timerElement = document.getElementById("timer");
+
+    let timerInterval;
+    function startTimer() {
+            timerInterval = setInterval(function () {
+            if (timerSeconds > 0) {
+                timerSeconds--;
+                timerElement.textContent = `Time Left: ${timerSeconds} seconds`;
+            }
+            else {
+                clearInterval(timerInterval);
+                showNextQuestion();
+            }
+        }, 1000);
+    }
+
+    function showNextQuestion() {
+        clearInterval(timerInterval);
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizQuestions.length) {  // 0 < 10
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }
+
+    function handleOptionClick(option) {
+
+        if (option === quizQuestions[currentQuestionIndex].correctAnswer) {
+            score++;
+            alert("Correct answer!");
+            clearInterval(timerInterval);
+        } else {
+            alert("Wrong answer!");
+            clearInterval(timerInterval);
+        }
+        showNextQuestion();
+    }
+
+    function showQuestion() {
+        let question = quizQuestions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+
+        optionsContainer.innerHTML = "";
+
+        question.options.forEach((option) => {
+            let optionElement = document.createElement("button");
+            optionElement.textContent = option;
+            optionElement.style.margin = "5px";
+            optionElement.style.padding = "5px";
+            optionElement.style.cursor = "pointer";
+            optionElement.style.background = "transparent"
+            optionElement.style.fontSize = "20px"
+            optionElement.addEventListener("click", () => handleOptionClick(option));
+            optionsContainer.appendChild(optionElement);
+        });
+
+        scoreElement.textContent = `Score: ${score * 2} / ${currentQuestionIndex * 2}`;
+        timerSeconds = 11;
+        startTimer();
+    }
+
+    function endQuiz() {
+        body.innerHTML = "";
+        let h1body = document.createElement('h1');
+        h1body.style.width = "100vw";
+        h1body.style.textAlign = "center";
+        h1body.textContent = `Quiz completed! Your Score is ${score * 2} / ${currentQuestionIndex * 2}`;
+        h1body.style.fontSize = "70px";
+        h1body.style.marginTop = "30vh";
+
+        let anchor = document.createElement('a');
+        anchor.href = "file:///E:/Java%20Script/dr%20sahab/dom/dom-practices/21-Quiz%20Competition/index.html"; // Replace "your_target_url_here" with the URL you want to link to
+
+        let back = document.createElement('button');
+        back.textContent = "Back";
+        back.style.height = "50px";
+        back.style.width = "160px";
+        back.style.backgroundColor = "transparent";
+        back.style.fontSize = "25px";
+
+        anchor.appendChild(back);
+
+        body.style.height = "50vh";
+        body.style.width = "50vw";
+        body.style.display = "flex";
+        body.style.flexDirection = "column";
+        body.style.alignItems = "center";
+        body.style.margin = "0 auto";
+        body.style.justifyContent = "center";
+
+        body.appendChild(h1body);
+        body.appendChild(anchor);
+    }
+
+    showQuestion();
+    nextButton.addEventListener("click", ()=>{
+        showNextQuestion();
+    });
+
+
+</script>
+
+</html>
